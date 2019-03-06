@@ -46,13 +46,14 @@ public class JwtService {
 
 
     void addAuthentication(HttpServletResponse res, Authentication authentication) {
-        String jwt = createJwt(authentication.getName(), getRolesAsString(authentication));
+        UserDTO userDTO = (UserDTO) authentication.getPrincipal();
+        String jwt = createJwt(userDTO.getEmailLogin(), getRolesAsString(authentication));
         res.addHeader(HttpHeaders.AUTHORIZATION, TOKEN_PREFIX + jwt);
         res.addHeader(HttpHeaders.CONTENT_TYPE, "application/json");
-        ObjectMapper objectMapper = new ObjectMapper();
-        RestTemplate restTemplate = new RestTemplate();
-        UserDTO userDTO = restTemplate.getForObject(usersServiceLoginURL + "email?value=" + authentication.getName(), UserDTO.class);
+//        RestTemplate restTemplate = new RestTemplate();
+//        UserDTO userDTO = restTemplate.getForObject(usersServiceLoginURL + "email?value=" + authentication.getName(), UserDTO.class);
         try {
+            ObjectMapper objectMapper = new ObjectMapper();
             res.getWriter().write(objectMapper.writeValueAsString(userDTO));
         } catch (IOException e) {
             e.printStackTrace();
