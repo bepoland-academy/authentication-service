@@ -1,4 +1,4 @@
-package pl.betse.beontime.security;
+package pl.betse.beontime.model;
 
 import lombok.Data;
 

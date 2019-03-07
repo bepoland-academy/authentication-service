@@ -2,6 +2,7 @@ package pl.betse.beontime.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -12,20 +13,19 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @EnableWebSecurity
 @Configuration
+@Order(1)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private static final String ROOT_ENDPOINT = "/**";
     private static final String LOGIN_ENDPOINT = "/login";
 
     private final JwtService jwtService;
-
-
-    @Autowired
-    private CustomAuthenticationProvider authProvider;
+    private final CustomAuthenticationProvider authProvider;
 
     @Autowired
-    public WebSecurityConfig(JwtService jwtService) {
+    public WebSecurityConfig(JwtService jwtService, CustomAuthenticationProvider authProvider) {
         this.jwtService = jwtService;
+        this.authProvider = authProvider;
     }
 
 
@@ -44,15 +44,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .anyRequest().authenticated()
                 .and()
                 .addFilterBefore(new UserAndPasswordLoginFilter(LOGIN_ENDPOINT, authenticationManager(), jwtService),
-                        UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(new JwtAuthenticationFilter(jwtService),
                         UsernamePasswordAuthenticationFilter.class);
     }
 
     @Override
     protected void configure(
-            AuthenticationManagerBuilder auth) throws Exception {
-
+            AuthenticationManagerBuilder auth) {
         auth.authenticationProvider(authProvider);
     }
 }
