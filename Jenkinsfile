@@ -3,7 +3,7 @@ pipeline {
   stages {
     stage('Checkout Sources') {
       steps {
-        git(url: 'https://github.com/bepoland-academy/users-service.git', branch: 'development')
+        git(url: 'https://github.com/bepoland-academy/authentication-service.git', branch: 'development')
       }
     }
     stage('Compile') {
